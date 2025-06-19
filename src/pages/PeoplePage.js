@@ -18,34 +18,44 @@ function PeoplePage() {
   }, []);
 
   return (
-    <div className="people-page">
-      <h1>People</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+    <div className="people-page p-6">
+      <h1 className="text-3xl font-bold mb-6">People</h1>
+      {error && <p className="text-red-600 mb-4">{error}</p>}
       {people.length > 0 ? (
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Employee ID</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {people.map((person) => (
-              <tr key={person.id}>
-                <td>{person.name}</td>
-                <td>{person.email}</td>
-                <td>{person.empId}</td>
-                <td>{person.status}</td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white shadow rounded">
+            <thead>
+              <tr className="bg-gray-100 text-left">
+                <th className="py-3 px-6">Name</th>
+                <th className="py-3 px-6">Email</th>
+                <th className="py-3 px-6">Phone</th>
+                <th className="py-3 px-6">Role</th>
+                <th className="py-3 px-6">Status</th>
+                <th className="py-3 px-6">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {people.map((person) => (
+                <tr key={person._id} className="border-b">
+                  <td className="py-3 px-6">{person.name}</td>
+                  <td className="py-3 px-6">{person.email}</td>
+                  <td className="py-3 px-6">{person.phone || '-'}</td>
+                  <td className="py-3 px-6">{person.role || '-'}</td>
+                  <td className="py-3 px-6">{person.active ? 'Active' : 'Inactive'}</td>
+                  <td className="py-3 px-6">
+                    {/* Placeholder buttons for Edit/Delete */}
+                    <button className="text-blue-600 hover:underline mr-2">Edit</button>
+                    <button className="text-red-600 hover:underline">Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <p>No people found.</p>
       )}
-      {/* TODO: Add buttons and modals for Add/Edit/Delete */}
+      {/* TODO: Add modals for Add/Edit/Delete */}
     </div>
   );
 }
