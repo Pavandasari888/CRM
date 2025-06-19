@@ -1,10 +1,8 @@
-let leads = [
-  { id: '1', name: 'Lead One', date: '2024-09-01', assigned: true, closed: false },
-  { id: '2', name: 'Lead Two', date: '2024-09-02', assigned: false, closed: false },
-];
+const Lead = require('../models/Lead');
 
 exports.listLeads = async (req, res, next) => {
   try {
+    const leads = await Lead.find();
     res.json(leads);
   } catch (error) {
     next(error);
@@ -17,15 +15,14 @@ exports.createLead = async (req, res, next) => {
     if (!name || !date) {
       return res.status(400).json({ message: 'Name and date are required' });
     }
-    const newLead = {
-      id: (leads.length + 1).toString(),
+    const newLead = new Lead({
       name,
       date,
       assigned: assigned || false,
       closed: closed || false,
-    };
-    leads.push(newLead);
-    res.status(201).json(newLead);
+    });
+    const savedLead = await newLead.save();
+    res.status(201).json(savedLead);
   } catch (error) {
     next(error);
   }
@@ -48,7 +45,7 @@ exports.updateLead = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { name, date, assigned, closed } = req.body;
-    const lead = leads.find(l => l.id === id);
+    const lead = await Lead.findById(id);
     if (!lead) {
       return res.status(404).json({ message: 'Lead not found' });
     }
@@ -56,7 +53,8 @@ exports.updateLead = async (req, res, next) => {
     if (date) lead.date = date;
     if (assigned !== undefined) lead.assigned = assigned;
     if (closed !== undefined) lead.closed = closed;
-    res.json(lead);
+    const updatedLead = await lead.save();
+    res.json(updatedLead);
   } catch (error) {
     next(error);
   }
@@ -65,11 +63,10 @@ exports.updateLead = async (req, res, next) => {
 exports.deleteLead = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const index = leads.findIndex(l => l.id === id);
-    if (index === -1) {
+    const deletedLead = await Lead.findByIdAndDelete(id);
+    if (!deletedLead) {
       return res.status(404).json({ message: 'Lead not found' });
     }
-    leads.splice(index, 1);
     res.json({ message: 'Lead deleted' });
   } catch (error) {
     next(error);
